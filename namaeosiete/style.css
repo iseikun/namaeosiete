@@ -1,0 +1,941 @@
+/* style.css - クエリ大戦争 */
+:root {
+  --primary-color: #3b82f6;
+  --accent-color: #f59e0b;
+  --bg-dark: #0f172a;
+  --card-bg: #1e293b;
+  --text-light: #f8fafc;
+  --hp-green: #10b981;
+  --hp-enemy: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Hiragino Sans', 'Meiryo';
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #4338ca;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.title-container h1 {
+  font-size: 1.4rem;
+  color: #fbbf24;
+  text-shadow: 2px 2px 0 #b45309;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.resource-bar {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.res-item {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #475569;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.res-item .icon {
+  font-size: 1.1rem;
+}
+
+.nav-tabs {
+  display: flex;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+.nav-btn.active {
+  color: #fbbf24;
+  background: #1f2937;
+  border-bottom: 3px solid #fbbf24;
+}
+
+main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-content {
+  display: none;
+  flex: 1;
+  position: relative;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* === バトル画面 === */
+#battle-tab {
+  height: calc(100vh - 120px);
+  min-height: 580px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* バトル開始前オーバーレイ */
+.battle-start-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  transition: opacity 0.3s;
+}
+
+.battle-start-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-card {
+  background: #1e293b;
+  border: 3px solid #fbbf24;
+  border-radius: 16px;
+  padding: 24px 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  max-width: 580px;
+  width: 95%;
+}
+
+.start-target-banner {
+  background: linear-gradient(135deg, #14532d, #166534);
+  border: 2px solid #86efac;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+.start-target-banner h3 {
+  color: #fef08a;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+.start-target-banner p {
+  color: #bbf7d0;
+  font-size: 0.85rem;
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+/* ステージ選択ボタン群 */
+.stage-select-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.stage-btn {
+  flex: 1;
+  background: #0f172a;
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 10px 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stage-btn:hover {
+  border-color: #38bdf8;
+  color: #fff;
+}
+
+.stage-btn.active {
+  border-color: #fbbf24;
+  background: #1e1b4b;
+  color: #fde047;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.stage-btn.forest-stage.active {
+  border-color: #22c55e;
+  background: #052e16;
+  color: #86efac;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+.stage-btn .stage-icon {
+  font-size: 1.6rem;
+}
+
+.start-card h2 {
+  font-size: 2rem;
+  color: #fbbf24;
+  margin-bottom: 10px;
+}
+
+.start-card p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.btn-start-battle {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 2px solid #fca5a5;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 14px 40px;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  transition: all 0.2s;
+  animation: pulseBtn 1.5s infinite;
+}
+
+.btn-start-battle:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #f87171, #ef4444);
+}
+
+@keyframes pulseBtn {
+  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9); }
+}
+
+/* ボス警告バナー */
+.boss-warning-overlay {
+  display: none;
+  position: absolute;
+  top: 35%;
+  left: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(220, 38, 38, 0.9),
+    rgba(220, 38, 38, 0.9) 20px,
+    rgba(0, 0, 0, 0.9) 20px,
+    rgba(0, 0, 0, 0.9) 40px
+  );
+  border-top: 4px solid #fef08a;
+  border-bottom: 4px solid #fef08a;
+  padding: 16px 0;
+  text-align: center;
+  z-index: 40;
+  pointer-events: none;
+  animation: warningFlash 0.5s infinite alternate;
+}
+
+.boss-warning-overlay.active {
+  display: block;
+}
+
+.boss-warning-overlay h3 {
+  font-size: 2rem;
+  color: #fef08a;
+  text-shadow: 2px 2px 0 #000, 0 0 10px #f59e0b;
+  letter-spacing: 2px;
+}
+
+.boss-warning-overlay p {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@keyframes warningFlash {
+  from { opacity: 0.85; }
+  to { opacity: 1; filter: brightness(1.2); }
+}
+
+.battle-canvas-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  background: #020617;
+  overflow: hidden;
+}
+
+#battleCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.battle-hud-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.hud-box {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 0.9rem;
+  pointer-events: auto;
+}
+
+.memory-counter {
+  font-size: 1.2rem;
+  color: #38bdf8;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+.camera-controls {
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.cam-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #475569;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.cam-btn:hover {
+  background: #334155;
+}
+
+/* バトル下部コントロール（にゃんこ風） */
+.battle-controls {
+  height: 160px;
+  background: #0f172a;
+  border-top: 3px solid #334155;
+  display: flex;
+  padding: 8px 12px;
+  gap: 12px;
+  align-items: center;
+}
+
+.side-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 150px;
+}
+
+.action-btn {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.15s;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+.cpu-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: 2px solid #60a5fa;
+}
+.cpu-btn:not(:disabled):hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.cannon-btn {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  border: 2px solid #f87171;
+  position: relative;
+  overflow: hidden;
+}
+.cannon-btn:not(:disabled):hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 0 12px #ef4444;
+}
+
+.deck-container {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.deck-unit-btn {
+  flex: 0 0 115px;
+  height: 140px;
+  background: #1e293b;
+  border: 2px solid #475569;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  transition: all 0.15s;
+}
+
+.deck-unit-btn:hover:not(:disabled) {
+  border-color: #38bdf8;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+}
+
+.deck-unit-btn:disabled {
+  filter: brightness(0.6);
+  cursor: not-allowed;
+}
+
+.deck-unit-btn .cooldown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  transform-origin: bottom;
+  transition: height 0.05s linear;
+}
+
+.deck-unit-btn .unit-icon {
+  font-size: 2.2rem;
+  margin-top: 4px;
+}
+
+.deck-unit-btn .unit-name {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.deck-unit-btn .unit-cost {
+  background: #0284c7;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: 90%;
+  text-align: center;
+}
+
+.deck-unit-btn.legendary {
+  border-color: #f59e0b;
+  background: radial-gradient(circle, #451a03 0%, #1e293b 100%);
+}
+.deck-unit-btn.legendary:hover:not(:disabled) {
+  border-color: #fbbf24;
+  box-shadow: 0 0 15px #f59e0b;
+}
+
+/* === ガチャ画面 === */
+#gacha-tab {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.gacha-banner {
+  width: 100%;
+  max-width: 800px;
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95, #312e81);
+  border: 3px solid #fbbf24;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.gacha-banner h2 {
+  font-size: 1.8rem;
+  color: #fbbf24;
+  margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.legend-highlight {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.legend-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid #eab308;
+  border-radius: 12px;
+  padding: 12px 18px;
+  width: 240px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
+}
+
+.legend-avatar {
+  font-size: 3rem;
+  margin-bottom: 6px;
+}
+
+.legend-quote {
+  font-size: 0.85rem;
+  color: #fef08a;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.gacha-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.gacha-btn {
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.gacha-btn-single {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+.gacha-btn-single:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+}
+
+.gacha-btn-multi {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border: 2px solid #fef08a;
+}
+.gacha-btn-multi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6);
+}
+
+.gacha-rates {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* ガチャ演出モーダル */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.gacha-anim-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gacha-capsule {
+  font-size: 6rem;
+  animation: bounce 0.6s infinite alternate;
+  filter: drop-shadow(0 0 20px #fbbf24);
+}
+
+@keyframes bounce {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-20px) scale(1.05); }
+}
+
+.gacha-result-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  max-width: 900px;
+  width: 90%;
+  margin-top: 20px;
+}
+
+.result-card {
+  background: #1e293b;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #475569;
+  animation: popIn 0.3s ease-out;
+}
+
+.result-card.legendary {
+  border-color: #fbbf24;
+  background: radial-gradient(circle, #5b21b6 0%, #1e1b4b 100%);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+  animation: legendGlow 1.5s infinite alternate;
+}
+
+@keyframes legendGlow {
+  from { box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+  to { box-shadow: 0 0 30px rgba(251, 191, 36, 0.9); }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.close-modal-btn {
+  margin-top: 24px;
+  padding: 10px 30px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* === キャラ一覧/編成タブ === */
+#units-tab {
+  padding: 24px;
+  overflow-y: auto;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.unit-detail-card {
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unit-detail-card.locked {
+  filter: grayscale(1) opacity(0.5);
+}
+
+.unit-detail-card.legendary {
+  border-color: #fbbf24;
+}
+
+.unit-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.unit-detail-header .icon {
+  font-size: 2.5rem;
+}
+
+.unit-detail-header .name-area h3 {
+  font-size: 1.1rem;
+  color: #f8fafc;
+}
+
+.unit-rarity {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.rarity-normal { background: #475569; color: #fff; }
+.rarity-rare { background: #0284c7; color: #fff; }
+.rarity-super_rare { background: #9333ea; color: #fff; }
+.rarity-legendary { background: #d97706; color: #fef08a; }
+
+.unit-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  background: rgba(0,0,0,0.2);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.unit-desc {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* 戦闘結果モーダル */
+.battle-result-banner {
+  text-align: center;
+  padding: 30px;
+  border-radius: 16px;
+  background: #0f172a;
+  border: 3px solid #3b82f6;
+  max-width: 500px;
+  width: 90%;
+}
+.battle-result-banner.win {
+  border-color: #10b981;
+}
+.battle-result-banner.win h2 {
+  color: #34d399;
+  font-size: 2.2rem;
+}
+.battle-result-banner.lose {
+  border-color: #ef4444;
+}
+.battle-result-banner.lose h2 {
+  color: #f87171;
+  font-size: 2.2rem;
+}
+
+/* === 画像表示・カスタマイズスタイル === */
+.unit-icon-box {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.unit-thumb-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #60a5fa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.unit-thumb-img.legendary {
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+}
+
+/* 画像設定画面 */
+#custom-tab {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.custom-card {
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.custom-card.legendary {
+  border-color: #fbbf24;
+  background: radial-gradient(circle, #2e1065 0%, #1e293b 100%);
+}
+
+.custom-preview-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: #0f172a;
+  border: 2px dashed #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 3rem;
+  position: relative;
+}
+
+.custom-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.custom-card-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-upload-file {
+  flex: 1;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-upload-file:hover {
+  background: #1d4ed8;
+}
+
+.btn-reset-file {
+  background: #475569;
+  color: #e2e8f0;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-reset-file:hover {
+  background: #64748b;
+}
+
+.file-path-hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 100%;
+  word-break: break-all;
+}
+
