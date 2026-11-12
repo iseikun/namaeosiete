@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クエリ大戦争 〜にゃんこDROP DATABASE〜</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="title-container">
+      <h1>💥 クエリ大戦争 <span>〜DROP DATABASE〜</span></h1>
+      <div class="subtitle">データベース横スクロール防衛バトル</div>
+    </div>
+    <div class="resource-bar">
+      <div class="res-item">
+        <span class="icon">💎</span>
+        <span>クエリ石: <span id="stoneDisplay">3000</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ナビゲーションタブ -->
+  <nav class="nav-tabs">
+    <button class="nav-btn active" id="tab-btn-battle">⚔️ 出撃（バトル）</button>
+    <button class="nav-btn" id="tab-btn-gacha">🎰 ガチャ（召喚）</button>
+    <button class="nav-btn" id="tab-btn-units">📜 キャラ一覧・図鑑</button>
+    <button class="nav-btn" id="tab-btn-custom">🖼️ 画像設定</button>
+  </nav>
+
+  <!-- メインコンテンツエリア -->
+  <main>
+    <!-- バトル画面 -->
+    <div id="battle-tab" class="tab-content active">
+      <div class="battle-canvas-container">
+        <canvas id="battleCanvas"></canvas>
+
+        <!-- バトル開始待機オーバーレイ -->
+        <div class="battle-start-overlay" id="battleStartOverlay">
+          <div class="start-card">
+            <div class="start-target-banner">
+              <h3>🌲 目指せ！元気森森ステージ 🌲</h3>
+              <p>海・山を突破し、最深部に君臨する「アローラのすがた」を討伐せよ！</p>
+            </div>
+
+            <div style="font-size: 0.95rem; margin-bottom: 10px; color: #cbd5e1; font-weight: bold;">
+              出撃ステージを選択：
+            </div>
+
+            <!-- ステージ選択ボタン群 -->
+            <div class="stage-select-container">
+              <button class="stage-btn active" id="stageBtn_sea" onclick="selectStage(0)">
+                <span class="stage-icon">🌊</span>
+                <span>海ステージ</span>
+                <small style="color: #67e8f9;">第1章</small>
+              </button>
+              <button class="stage-btn" id="stageBtn_mountain" onclick="selectStage(1)">
+                <span class="stage-icon">⛰️</span>
+                <span>山ステージ</span>
+                <small style="color: #fb923c;">第2章</small>
+              </button>
+              <button class="stage-btn forest-stage" id="stageBtn_forest" onclick="selectStage(2)">
+                <span class="stage-icon">🌲👑</span>
+                <span>元気森森</span>
+                <small style="color: #4ade80;">最終決戦！</small>
+              </button>
+            </div>
+
+            <div id="selectedStageDesc" style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px;">
+              🌊 【海ステージ】波立つデータの大海原。N+1大帝の群れを捌け！
+            </div>
+
+            <button class="btn-start-battle" id="startBattleBtn">🔥 バトル開始！</button>
+            <div style="margin-top: 15px; font-size: 0.85rem; color: #cbd5e1;">
+              💡 画面クリックで音声（冷笑 / おはよう / ねっけつ）が有効になります
+            </div>
+          </div>
+        </div>
+
+        <!-- ボス警報バナー -->
+        <div class="boss-warning-overlay" id="bossWarningOverlay">
+          <h3>⚠️ WARNING!! ⚠️</h3>
+          <p id="bossWarningText">強大なレガシーボスが接近中！</p>
+        </div>
+        
+        <!-- バトル上部HUD -->
+        <div class="battle-hud-top">
+          <div class="hud-box">
+            <div>メモリ残量 (RAM):</div>
+            <div class="memory-counter" id="memoryCounter">100 / 200 MB</div>
+          </div>
+          <div class="hud-box" style="text-align: right;">
+            <div id="hudStageTitle" style="font-weight: bold; color: #38bdf8;">🌊 海ステージ</div>
+            <div id="hudStageBoss" style="font-size: 0.8rem; color: #f87171;">BOSS: N+1大帝</div>
+          </div>
+        </div>
+
+        <!-- カメラ移動ボタン -->
+        <div class="camera-controls">
+          <button class="cam-btn" id="camLeftBtn">◀ 自陣へ</button>
+          <button class="cam-btn" id="camRightBtn">敵陣へ ▶</button>
+        </div>
+      </div>
+
+      <!-- バトル下部コントロール（にゃんこ風） -->
+      <div class="battle-controls">
+        <!-- サイドボタン：CPU増設 & DROP TABLE砲 -->
+        <div class="side-actions">
+          <button class="action-btn cpu-btn" id="cpuBtn">
+            <span>⚡ CPU増設</span>
+            <small id="cpuLevelText">Lv.1</small>
+          </button>
+          <button class="action-btn cannon-btn" id="cannonBtn" disabled>
+            💥 DROP TABLE砲 (0%)
+          </button>
+        </div>
+
+        <!-- デッキユニット一覧 -->
+        <div class="deck-container" id="deckContainer">
+          <!-- JSで動的生成 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ガチャ画面 -->
+    <div id="gacha-tab" class="tab-content">
+      <div class="gacha-banner">
+        <h2>🔥 伝説のアーキテクトフェス 🔥</h2>
+        <p>伝説レア3強「いせいくん」「よしのり」「そういくん」超絶ピックアップ！</p>
+        
+        <div class="legend-highlight">
+          <div class="legend-card">
+            <div class="legend-avatar">❄️🕶️</div>
+            <span class="unit-rarity rarity-legendary">伝説レア</span>
+            <h3>【絶対零度】いせいくん</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0;">出陣時:「冷笑」</p>
+            <div class="legend-quote">「フッ…お前のクエリ、フルスキャンじゃん（冷笑）」</div>
+          </div>
+
+          <div class="legend-card">
+            <div class="legend-avatar">☀️👑</div>
+            <span class="unit-rarity rarity-legendary">伝説レア</span>
+            <h3>【朝の支配者】よしのり</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0;">出陣時:「おはようございまーす」</p>
+            <div class="legend-quote">「おはようございまーす！今日も元気にDELETE！」</div>
+          </div>
+
+          <div class="legend-card">
+            <div class="legend-avatar">🔥🥋</div>
+            <span class="unit-rarity rarity-legendary">伝説レア</span>
+            <h3>【熱血闘士】そういくん</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0;">出陣時:「ねっけつーーっ！」</p>
+            <div class="legend-quote">「燃え尽きるまでCOMMITし続けるぜ！！」</div>
+          </div>
+
+          <div class="legend-card">
+            <div class="legend-avatar">🦔🌲</div>
+            <span class="unit-rarity rarity-legendary">伝説レア</span>
+            <h3>ただの森ディグ</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0;">出陣＆攻撃:「名前教えて」</p>
+            <div class="legend-quote">「なまえおしえて！攻撃するたびに名前教えて！」</div>
+          </div>
+        </div>
+
+        <!-- ボス紹介バナー -->
+        <div style="background: rgba(220, 38, 38, 0.25); border: 2px dashed #ef4444; border-radius: 10px; padding: 12px; margin: 15px auto; max-width: 600px;">
+          <h4 style="color: #f87171; font-size: 1rem;">🚨 凶悪ボス枠：森ディグ(アローラのすがた) 襲来！</h4>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">
+            敵城HPが50%を切ると<strong>「名前教えて」</strong>と登場し、<strong>攻撃するたびに「個人面談！」</strong>と叫びながら味方を吹き飛ばす超強敵ボス！味方のただの森ディグとの同族対決を制せ！
+          </p>
+        </div>
+
+        <div class="gacha-actions">
+          <button class="gacha-btn gacha-btn-single" id="gachaSingleBtn">単発召喚 (💎100)</button>
+          <button class="gacha-btn gacha-btn-multi" id="gachaMultiBtn">10連召喚 (💎1000)</button>
+        </div>
+      </div>
+
+      <div class="gacha-rates">
+        <strong>排出確率:</strong>
+        伝説レア: 14% (いせいくん 3.5%, よしのり 3.5%, そういくん 3.5%, ただの森ディグ 3.5%) / 激レア: 16% (トランザクション 16%) / レア: 40% / ノーマル: 30%<br>
+        ※ 重複して引くとユニットのレベルがUPしてステータスが強化されます！
+      </div>
+    </div>
+
+    <!-- キャラ図鑑画面 -->
+    <div id="units-tab" class="tab-content">
+      <h2>📜 キャラクター図鑑 & ステータス</h2>
+      <p style="color: #94a3b8; font-size: 0.9rem;">ガチャで引いたキャラクターは自動でバトルに出撃可能になります。</p>
+      <div class="units-grid" id="unitsGrid">
+        <!-- JSで動的生成 -->
+      </div>
+    </div>
+
+    <!-- 画像カスタマイズ画面 -->
+    <div id="custom-tab" class="tab-content">
+      <h2>🖼️ キャラクター画像カスタマイズ</h2>
+      <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid #475569; border-radius: 8px; padding: 14px; margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">
+        <strong>💡 画像の貼り方（どちらでもOK！）:</strong><br>
+        1. <strong>【超かんたん】</strong> 下の各キャラの「画像を選択」ボタンを押して、PC内の画像（PNG/JPG/GIF）を選ぶだけ！ブラウザに自動保存されます。<br>
+        2. <strong>【ファイル配置】</strong> <code>images</code> フォルダ内に、表示されているファイル名（例: <code>images/iseikun.png</code>）で画像を置くだけでも反映されます！
+      </div>
+
+      <div class="custom-grid" id="customGrid">
+        <!-- JSで動的生成 -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ガチャ演出モーダル -->
+  <div class="modal-overlay" id="gachaModal">
+    <div class="gacha-anim-container" id="gachaAnim">
+      <div class="gacha-capsule">💾✨</div>
+      <h2 style="color: #fbbf24; margin-top: 15px; font-size: 1.8rem;">データベース接続中...</h2>
+      <p style="color: #cbd5e1;">SELECT * FROM gacha_pool ORDER BY RANDOM();</p>
+    </div>
+
+    <div class="gacha-result-grid" id="gachaGrid" style="display: none;"></div>
+
+    <button class="close-modal-btn" id="gachaCloseBtn" style="display: none;">結果を閉じる</button>
+  </div>
+
+  <!-- 戦闘終了モーダル -->
+  <div class="modal-overlay" id="battleResultModal">
+    <div class="battle-result-banner win" id="battleResultBanner">
+      <h2 id="resultTitle">VICTORY!!</h2>
+      <p id="resultDesc" style="margin: 15px 0; color: #e2e8f0; font-size: 1.1rem;"></p>
+      <div id="resultReward" style="font-weight: bold; color: #fbbf24; font-size: 1.2rem; margin-bottom: 20px;"></div>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <button class="action-btn cpu-btn" id="resultRetryBtn" style="padding: 10px 20px;">再戦する</button>
+        <button class="action-btn cannon-btn" id="resultGachaBtn" style="padding: 10px 20px; background: #d97706; border-color: #fbbf24;">ガチャを回す</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
